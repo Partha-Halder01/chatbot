@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a clean, modern font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* A few custom styles to enhance the UI */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        /* Custom scrollbar for a cleaner look in Webkit browsers */
+        #chat-log::-webkit-scrollbar {
+            width: 8px;
+        }
+        #chat-log::-webkit-scrollbar-track {
+            background: #e2e8f0; /* slate-200 */
+        }
+        #chat-log::-webkit-scrollbar-thumb {
+            background-color: #94a3b8; /* slate-400 */
+            border-radius: 20px;
+        }
+        /* Smooth scrolling behavior for the chat log */
+        #chat-log {
+            scroll-behavior: smooth;
+        }
+        /* A subtle animation for new messages */
+        .chat-message {
+            animation: fadeIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen p-4">
+
+    <!-- Main Chat Container -->
+    <div class="w-full max-w-lg h-full sm:h-[90vh] flex flex-col bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+        
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-4 shadow-md z-10 flex items-center">
+            <h1 class="text-xl font-bold">Chatbot</h1>
+        </header>
+
+        <!-- Chat Log / Messages Area -->
+        <main id="chat-log" class="flex-1 p-6 overflow-y-auto bg-slate-50">
+            <!-- Initial bot welcome message -->
+            <div class="chat-message flex justify-start mb-4">
+                <div class="bg-slate-200 text-slate-800 rounded-lg py-2 px-4 max-w-md">
+                    <p>Hello! I'm a chatbot. How can I assist you today?</p>
+                </div>
+            </div>
+        </main>
+
+        <!-- Input Area -->
+        <footer class="bg-white border-t border-slate-200 p-4">
+            <div class="flex items-center">
+                <input type="text" id="user-input" placeholder="Type your message..." class="flex-1 px-4 py-2 border border-slate-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300 disabled:bg-slate-100">
+                <button id="send-button" class="ml-3 bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-transform transform hover:scale-110 disabled:bg-blue-400 disabled:cursor-not-allowed">
+                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- Get references to the HTML elements ---
+        const chatLog = document.getElementById('chat-log');
+        const userInput = document.getElementById('user-input');
+        const sendButton = document.getElementById('send-button');
+
+        // --- UI Helper Functions ---
+
+        // Shows a "thinking" bubble while waiting for the server
+        function showThinkingIndicator() {
+            const thinkingMessage = `
+                <div id="thinking-indicator" class="chat-message flex justify-start mb-4">
+                    <div class="bg-slate-200 text-slate-800 rounded-lg py-2 px-4 max-w-xs">
+                        <p class="animate-pulse">...</p>
+                    </div>
+                </div>`;
+            chatLog.insertAdjacentHTML('beforeend', thinkingMessage);
+            chatLog.scrollTop = chatLog.scrollHeight;
+            userInput.disabled = true;
+            sendButton.disabled = true;
+        }
+
+        // Removes the "thinking" bubble
+        function hideThinkingIndicator() {
+            const indicator = document.getElementById('thinking-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+            userInput.disabled = false;
+            sendButton.disabled = false;
+            userInput.focus();
+        }
+        
+        // Adds a new message to the chat log
+        function appendMessage(sender, message) {
+            const messageWrapper = document.createElement('div');
+            messageWrapper.classList.add('chat-message', 'flex', 'mb-4');
+
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('rounded-lg', 'py-2', 'px-4', 'max-w-md');
+
+            if (sender === 'user') {
+                messageWrapper.classList.add('justify-end');
+                messageBubble.classList.add('bg-blue-600', 'text-white');
+            } else { // sender === 'bot'
+                messageWrapper.classList.add('justify-start');
+                messageBubble.classList.add('bg-slate-200', 'text-slate-800');
+            }
+
+            messageBubble.textContent = message;
+            messageWrapper.appendChild(messageBubble);
+            chatLog.appendChild(messageWrapper);
+            // Scroll to the bottom to see the new message
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        // --- Main function to handle sending a message ---
+        async function handleSendMessage() {
+            const messageText = userInput.value.trim();
+            if (messageText === '') return;
+
+            // 1. Display the user's message immediately
+            appendMessage('user', messageText);
+            userInput.value = '';
+            showThinkingIndicator();
+
+            try {
+                // 2. Send the message to the Python backend
+                const response = await fetch('http://127.0.0.1:5000/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        message: messageText,
+                    }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                // 3. Get the reply and display it
+                const data = await response.json();
+                appendMessage('bot', data.reply);
+
+            } catch (error) {
+                console.error("Error communicating with backend:", error);
+                appendMessage('bot', "Sorry, I can't connect to the server. Please make sure the Python script is running.");
+            } finally {
+                // 4. Clean up the UI
+                hideThinkingIndicator();
+            }
+        }
+
+        // --- Event Listeners ---
+        // Handle clicks on the send button
+        sendButton.addEventListener('click', handleSendMessage);
+        // Handle pressing "Enter" in the input field
+        userInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                handleSendMessage();
+            }
+        });
+    </script>
+</body>
+</html>
+
