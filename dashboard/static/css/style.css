@@ -1,0 +1,227 @@
+/* AI Trading Bot Dashboard Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0f1419;
+    color: #e1e8ed;
+    min-height: 100vh;
+}
+
+/* Header */
+.header {
+    background: #1a2332;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #2a3a4a;
+}
+
+.header h1 {
+    font-size: 20px;
+    color: #4fc3f7;
+    margin-right: 16px;
+}
+
+.header-left, .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.clock {
+    font-size: 14px;
+    color: #8899a6;
+    font-family: monospace;
+}
+
+/* Badges */
+.badge {
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.badge-paper { background: #ff9800; color: #000; }
+.badge-live { background: #f44336; color: #fff; }
+.badge-running { background: #4caf50; color: #fff; }
+.badge-stopped { background: #616161; color: #fff; }
+.badge-market-open { background: #4caf50; color: #fff; }
+.badge-market-closed { background: #f44336; color: #fff; }
+
+/* Controls */
+.controls {
+    padding: 12px 24px;
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.btn:hover { opacity: 0.85; }
+.btn-green { background: #4caf50; color: #fff; }
+.btn-yellow { background: #ff9800; color: #000; }
+.btn-red { background: #f44336; color: #fff; }
+
+/* Grid layouts */
+.grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 0 24px 16px;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding: 0 24px 16px;
+}
+
+/* Cards */
+.card {
+    background: #1a2332;
+    border-radius: 8px;
+    padding: 16px;
+    border: 1px solid #2a3a4a;
+}
+
+.full-width {
+    margin: 0 24px 16px;
+}
+
+.card-title {
+    font-size: 13px;
+    color: #8899a6;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+}
+
+/* P&L display */
+.pnl-value {
+    font-size: 32px;
+    font-weight: 700;
+    font-family: monospace;
+}
+
+.pnl-positive { color: #4caf50; }
+.pnl-negative { color: #f44336; }
+.pnl-zero { color: #8899a6; }
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.stat-sub {
+    font-size: 13px;
+    color: #8899a6;
+    margin-top: 4px;
+}
+
+/* Tables */
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 8px 12px;
+    color: #8899a6;
+    border-bottom: 1px solid #2a3a4a;
+    font-weight: 600;
+}
+
+.data-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #1e2d3d;
+    font-family: monospace;
+}
+
+.data-table tr:hover {
+    background: rgba(79, 195, 247, 0.05);
+}
+
+.empty-row {
+    text-align: center;
+    color: #556677;
+    padding: 20px;
+}
+
+/* Signal colors */
+.signal-buy { color: #4caf50; font-weight: 600; }
+.signal-sell { color: #f44336; font-weight: 600; }
+.signal-hold { color: #8899a6; }
+
+/* Score bar */
+.score-bar {
+    display: inline-block;
+    width: 60px;
+    height: 8px;
+    background: #2a3a4a;
+    border-radius: 4px;
+    overflow: hidden;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.score-fill {
+    height: 100%;
+    border-radius: 4px;
+}
+
+/* Scroll box */
+.scroll-box {
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 13px;
+}
+
+.scroll-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scroll-box::-webkit-scrollbar-thumb {
+    background: #2a3a4a;
+    border-radius: 3px;
+}
+
+.trade-item, .llm-item {
+    padding: 8px 0;
+    border-bottom: 1px solid #1e2d3d;
+}
+
+.trade-item .trade-pnl {
+    font-family: monospace;
+    font-weight: 600;
+}
+
+.llm-item .llm-reasoning {
+    color: #8899a6;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .grid-3 { grid-template-columns: 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+}
