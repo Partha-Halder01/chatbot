@@ -85,6 +85,10 @@ class TradingEngine:
         self._recent_signals: list[dict] = []
         self._llm_log: list[dict] = []
 
+        # AI thinking state for live dashboard
+        self._ai_thinking: bool = False
+        self._ai_current_symbol: str = ""
+
         # Register candle callback
         self.market_data.on_new_candle(self._on_candle_complete)
 
@@ -236,11 +240,19 @@ class TradingEngine:
 
         # Check if signal meets threshold for LLM review
         if abs(signal.score) >= self.settings.strategy.signal_threshold:
+            # Set AI thinking state for dashboard
+            self._ai_thinking = True
+            self._ai_current_symbol = symbol
+
             # Get candle summary for LLM
             candle_summary = self.analyzer.get_recent_candle_summary(candles_5m)
 
             # LLM analysis
             signal = self.llm.analyze(signal, candle_summary)
+
+            # Clear AI thinking state
+            self._ai_thinking = False
+            self._ai_current_symbol = ""
 
             # Log LLM analysis
             self._llm_log.append(signal.to_dict())
@@ -333,6 +345,12 @@ class TradingEngine:
 
     def get_llm_log(self) -> list[dict]:
         return self._llm_log
+
+    def is_ai_thinking(self) -> bool:
+        return self._ai_thinking
+
+    def get_ai_current_symbol(self) -> str:
+        return self._ai_current_symbol
 
     def get_uptime_minutes(self) -> float:
         if self.start_time:

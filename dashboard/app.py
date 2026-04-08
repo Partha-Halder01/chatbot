@@ -1,6 +1,5 @@
 """Flask web dashboard for monitoring the trading bot."""
 
-import json
 from flask import Flask, render_template, jsonify, request
 from flask_cors import CORS
 from utils.logger import setup_logger
@@ -62,6 +61,25 @@ def create_dashboard(trading_engine):
     def get_llm_log():
         """Get recent LLM analysis log."""
         return jsonify(trading_engine.get_llm_log())
+
+    @app.route("/api/ai-thinking")
+    def get_ai_thinking():
+        """Get AI thinking state and analysis entries for live dashboard."""
+        entries = trading_engine.get_llm_log()
+        confirmed = sum(1 for e in entries if e.get("llm_confirmed"))
+        rejected = sum(1 for e in entries if not e.get("llm_confirmed") and e.get("llm_confidence", 0) > 0)
+        confidences = [e.get("llm_confidence", 0) for e in entries if e.get("llm_confidence", 0) > 0]
+        avg_conf = sum(confidences) / len(confidences) if confidences else 0
+
+        return jsonify({
+            "is_thinking": trading_engine.is_ai_thinking(),
+            "current_symbol": trading_engine.get_ai_current_symbol(),
+            "entries": entries[-20:],  # Last 20 analyses
+            "total_analyses": len(entries),
+            "confirmed": confirmed,
+            "rejected": rejected,
+            "avg_confidence": avg_conf,
+        })
 
     @app.route("/api/control/start", methods=["POST"])
     def start_trading():
