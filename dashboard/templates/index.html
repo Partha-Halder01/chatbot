@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Trading Bot - Dashboard</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <h1>AI Trading Bot</h1>
+            <span id="mode-badge" class="badge badge-paper">PAPER</span>
+            <span id="status-badge" class="badge badge-stopped">STOPPED</span>
+        </div>
+        <div class="header-right">
+            <span id="clock" class="clock"></span>
+            <span id="market-status" class="badge">Market Closed</span>
+        </div>
+    </header>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button id="btn-start" class="btn btn-green" onclick="startTrading()">Start Trading</button>
+        <button id="btn-stop" class="btn btn-yellow" onclick="stopTrading()">Stop Trading</button>
+        <button id="btn-close-all" class="btn btn-red" onclick="closeAll()">Close All Positions</button>
+    </div>
+
+    <!-- P&L Summary -->
+    <div class="grid-3">
+        <div class="card">
+            <div class="card-title">Today's P&L</div>
+            <div id="daily-pnl" class="pnl-value">₹0.00</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Win Rate</div>
+            <div id="win-rate" class="stat-value">0%</div>
+            <div id="trade-count" class="stat-sub">0 trades</div>
+        </div>
+        <div class="card">
+            <div class="card-title">Risk Status</div>
+            <div id="risk-status" class="stat-value">OK</div>
+            <div id="open-positions-count" class="stat-sub">0/2 positions</div>
+        </div>
+    </div>
+
+    <!-- Open Positions -->
+    <div class="card full-width">
+        <div class="card-title">Open Positions</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Side</th>
+                    <th>Qty</th>
+                    <th>Entry</th>
+                    <th>Current</th>
+                    <th>P&L</th>
+                    <th>SL</th>
+                    <th>TP</th>
+                    <th>Duration</th>
+                </tr>
+            </thead>
+            <tbody id="positions-table">
+                <tr><td colspan="9" class="empty-row">No open positions</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Signal Monitor -->
+    <div class="card full-width">
+        <div class="card-title">Signal Monitor (Watchlist)</div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>LTP</th>
+                    <th>Signal</th>
+                    <th>Score</th>
+                    <th>RSI</th>
+                    <th>MACD</th>
+                    <th>EMA</th>
+                    <th>VWAP</th>
+                    <th>Volume</th>
+                </tr>
+            </thead>
+            <tbody id="signals-table">
+                <tr><td colspan="9" class="empty-row">Waiting for data...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Two-column: Trade History + LLM Log -->
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-title">Trade History</div>
+            <div id="trade-history" class="scroll-box">
+                <p class="empty-row">No trades yet</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">LLM Analysis Log</div>
+            <div id="llm-log" class="scroll-box">
+                <p class="empty-row">No LLM analyses yet</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+</body>
+</html>
